@@ -2,69 +2,112 @@
 
 using namespace std;
 
-template <class T> 
-struct Node {
+template <class T>
+struct Node
+{
     T data;
     Node *next;
-    Node() {
+    Node()
+    {
         next = nullptr;
     }
 
-    Node(T t) {
+    Node(T t)
+    {
         data = t;
         next = nullptr;
     }
 };
 
-typedef Node<T> NodeT;
-typedef NodeT* NodeTptr;
-
 template <class T>
-struct List {
-    int size;
-    NodeTptr headptr, tailptr;
+struct List
+{
 
-    List() {
+    typedef Node<T> NodeT;
+    typedef NodeT *NodeTptr;
+    int size;
+    NodeTptr headptr;
+
+    List()
+    {
         headptr = new NodeT();
         tailptr = new NodeT();
-        headptr->next = tailptr;
-        tailptr->next = nullptr;
+        headptr->next = headptr;
         size = 0;
     }
 
-    NodeTptr push_front(T t) {
+    NodeTptr push_front(T t)
+    {
         insert(headptr);
         return nodeptr;
     }
 
-    NodeTptr insert(NodeTptr indexptr, T t) {
+    NodeTptr insert(NodeTptr indexptr, T t)
+    {
+        if (indexptr == headptr)
+            return nullptr;
         NodeTptr newptr = new NodeT(t);
         newptr->next = indexptr->next;
         indexptr->next = newptr;
         return newptr;
     }
 
-    NodeTptr begin() {
-        return headptr;
+    NodeTptr begin()
+    {
+        return headptr->next;
     }
 
-    NodeTptr end() {
-        return tailptr();
+    NodeTptr end()
+    {
+        return headptr;
     }
 };
 
-void solve(int k, List<int> &list) {
+typedef int Type;
+typedef Node<Type> NodeT;
+typedef NodeT* NodeTptr;
+
+void solve(int k, List<int> &list)
+{
     NodeTptr pt1, pt2;
+    bool illegal;
+
     pt1 = pt2 = list.begin();
-    for (; pt1 < 2; ++i)
+    illegal = false;
+    for (int i = 0; i < k; ++i)
+    {
+        if (pt2 == list.end())
+        {
+            illegal = true;
+            break;
+        }
+        pt2 = pt2->next;
+    }
+    if (illegal)
+    {
+        cout << "The value k is illegal" << endl;
+    }
+    else
+    {
+        while (pt2 != list.end())
+        {
+            pt1 = pt1->next;
+            pt2 = pt2->next;
+        }
+        cout << "The k-th last element is " << pt1->data << " @" << pt1 << endl;
+    }
+    
+    
 }
 
-int main() {
+int main()
+{
     List<int> list;
     int n, k;
     cin >> n >> k;
-    for (int i = 0; i < n; ++i) {
-        list.push_front(i);
+    for (int i = 0; i < n; ++i)
+    {
+        list.push_front(Type(i));
     }
 
     solve(k, list);
