@@ -85,13 +85,18 @@ ostream& operator<<(ostream& os, const List<T>& list) {
   return os;
 }
 
+typedef int Type;
+typedef Node<Type> NodeT;
+typedef NodeT* NodeTptr;
+
 void solve(int k, List<int>& list) {
+  NodeTptr pt1, pt2;
   bool illegal;
 
   cout << "The elements are " << list << endl;
 
   // find the k-th last element
-  auto pt1 = list.begin(), pt2 = list.begin();
+  pt1 = pt2 = list.begin();
   illegal = false;
   for (int i = 0; i < k; ++i) {
     if (pt2 == list.end()) {
@@ -107,7 +112,8 @@ void solve(int k, List<int>& list) {
       pt1 = pt1->next;
       pt2 = pt2->next;
     }
-    cout << "The k-th last element is " << pt1->value << " @" << pt1 << endl;
+    cout << "The k-th last element is " << pt1->value << " @" << pt1
+         << endl;
   }
 
   // find the element in the middle
@@ -127,12 +133,11 @@ void solve(int k, List<int>& list) {
 }
 
 int main() {
-  typedef int ElementType;
-  List<ElementType> list;
+  List<int> list;
   int n, k;
   cin >> n >> k;
   for (int i = n - 1; i >= 0; --i) {
-    if (!list.push_front(ElementType(i))) {
+    if (!list.push_front(Type(i))) {
       cout << "Failed to allocate memory" << endl;
       return -1;
     }

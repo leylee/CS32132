@@ -18,8 +18,6 @@ template <typename T>
 struct List;
 template <typename T>
 ostream& operator<<(ostream& os, const List<T>& list);
-template <typename T>
-List<T>& solve(List<T>& list);
 
 template <typename T>
 struct List {
@@ -67,7 +65,6 @@ struct List {
   // }
 
   friend ostream& operator<<<T>(ostream& os, const List<T>& list);
-  friend List<T> solve<T>(List<T>& list);
 };
 
 template <typename T>
@@ -88,18 +85,48 @@ ostream& operator<<(ostream& os, const List<T>& list) {
   return os;
 }
 
-template <typename T>
-List<T>& solve(List<T>& list) {
-  typedef NodeT* NodeTptr;
-
-  NodeTptr oldptr = list.begin();
-  list.headptr->next = list.headptr;
-  list.size = 0;
-  while (oldptr != list.end()) {
-    list.headptr.
-  }
-}
-
 typedef int Type;
 typedef Node<Type> NodeT;
 typedef NodeT* NodeTptr;
+
+void solve(int k, List<int>& list) {
+  NodeTptr pt1, pt2;
+  bool illegal;
+
+  cout << "The elements are " << list << endl;
+
+  // find the k-th last element
+  pt1 = pt2 = list.begin();
+  illegal = false;
+  for (int i = 0; i < k; ++i) {
+    if (pt2 == list.end()) {
+      illegal = true;
+      break;
+    }
+    pt2 = pt2->next;
+  }
+  if (illegal) {
+    cout << "The value k is illegal" << endl;
+  } else {
+    while (pt2 != list.end()) {
+      pt1 = pt1->next;
+      pt2 = pt2->next;
+    }
+    cout << "The k-th last element is " << pt1->value << " @" << pt1 << endl;
+  }
+
+  // find the element in the middle
+  pt1 = pt2 = list.begin();
+  while (true) {
+    pt2 = pt2->next;
+    if (pt2 == list.end()) {
+      break;
+    }
+    pt2 = pt2->next;
+    if (pt2 == list.end()) {
+      break;
+    }
+    pt1 = pt1->next;
+  }
+  cout << "The element in the middle is " << pt1->value << " @" << pt1 << endl;
+}
