@@ -69,10 +69,9 @@ struct List {
 
 template <typename T>
 ostream& operator<<(ostream& os, const List<T>& list) {
-  typedef Node<T>* NodeTptr;
   os << '[';
   bool first = true;
-  for (NodeTptr ptr = list.begin(); ptr != list.end(); ptr = ptr->next) {
+  for (auto ptr = list.begin(); ptr != list.end(); ptr = ptr->next) {
     if (!first) {
       os << ", ";
     } else {
