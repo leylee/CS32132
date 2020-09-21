@@ -33,3 +33,6 @@
 
 # Visual Studio Code config
 .vscode
+
+# Intellij IDEA config
+.idea
