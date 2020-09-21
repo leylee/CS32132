@@ -67,7 +67,7 @@ struct List {
   // }
 
   friend ostream& operator<<<T>(ostream& os, const List<T>& list);
-  friend List<T> solve<T>(List<T>& list);
+  friend List<T>& solve<T>(List<T>& list);
 };
 
 template <typename T>
@@ -90,16 +90,35 @@ ostream& operator<<(ostream& os, const List<T>& list) {
 
 template <typename T>
 List<T>& solve(List<T>& list) {
-  typedef NodeT* NodeTptr;
-
-  NodeTptr oldptr = list.begin();
+  auto oldptr = list.begin();
   list.headptr->next = list.headptr;
   list.size = 0;
   while (oldptr != list.end()) {
-    list.headptr.
+    list.push_front(oldptr->value);
+    auto delptr = oldptr;
+    oldptr = oldptr->next;
+    delete delptr;
   }
+  return list;
 }
 
 typedef int Type;
 typedef Node<Type> NodeT;
 typedef NodeT* NodeTptr;
+
+int main() {
+  typedef int ElementType;
+
+  int n;
+  List<ElementType> list;
+  cin >> n;
+  for (int i = n - 1; i >= 0; --i) {
+    list.push_front(ElementType(i));
+  }
+
+  cout << "The original list is " << list << endl;
+  solve(list);
+  cout << "The modified list is " << list << endl;
+
+  return 0;
+}
