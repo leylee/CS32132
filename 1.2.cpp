@@ -6,7 +6,16 @@
  * @input: a line contains 100 real numbers
  * @output: first output the array consists of all elements; then output the
  * maximum element and its position.
- * @hint: solve 函数是解题核心函数.
+ * @hint: solve 函数是解题核心函数. 可能采取的存储结构有多种:
+ * - O(n) 做法
+ * 1. 线性表 (顺序表或链表), 表中元素为对应位置上的实数本身. 只需扫一遍表,
+ * 即可得到答案.
+ * 2. 堆, 堆中元素为 key-value 键值对, 其中 key 是元素位置, value 是元素值. 以
+ * key 为关键字, 将所有元素建立最大堆后, 堆顶元素即为答案.
+ * - O(n lg n) 做法 (这么一道题真的用得到这么复杂的数据结构吗...)
+ * 3. 二叉搜索树, 树中元素为 key-value 键值对, 以 key 为关键字. 插入所有节点后,
+ * 最右侧的节点即为答案.
+ * 4. 维护区间最大值的线段树或树状数组
  */
 
 #include <iostream>
