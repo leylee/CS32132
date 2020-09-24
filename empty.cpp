@@ -4,5 +4,5 @@
  * @description:
  * @input:
  * @output:
- * @hint: solve 函数是解题核心函数.
+ * @hint: Solution 类是算法核心.
  */
