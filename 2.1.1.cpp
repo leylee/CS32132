@@ -130,19 +130,22 @@ void solve(int k, List<int>& list) {
   }
 
   // find the element in the middle
+  cout << "The element in the middle is ";
   pt1 = pt2 = list.begin();
   while (true) {
     pt2 = pt2->next;
     if (pt2 == list.end()) {
+      cout << pt1->value << " @" << pt1 << endl;
       break;
     }
     pt2 = pt2->next;
     if (pt2 == list.end()) {
+      cout << pt1->value << " @" << pt1 << " and " << pt1->next->value << " @"
+           << pt1->next << endl;
       break;
     }
     pt1 = pt1->next;
   }
-  cout << "The element in the middle is " << pt1->value << " @" << pt1 << endl;
 }
 
 int main() {
