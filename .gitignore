@@ -36,3 +36,6 @@
 
 # Intellij IDEA config
 .idea
+
+# MacOS system file
+.DS_Store
