@@ -21,6 +21,8 @@
  */
 
 #include <iostream>
+#include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -30,9 +32,23 @@ class Solution {
  private:
   class Event;
   class School;
-  static vector<int> is_first_3;
-  static vector<Event> events;
-  static vector<School> schools;
+  static map<int, Event> events;
+  static map<int, School> schools;
+
+  class Record {
+   public:
+    int eventId;
+    int rank;
+
+    Record() {}
+    Record(int _eventId, int _rank) : eventId(_eventId), rank(_rank) {}
+
+    wstring toString() const {
+      wostringstream sout;
+      sout << eventId << ' ' << rank;
+      return sout.str();
+    }
+  };
 
   class Event {
    private:
@@ -41,8 +57,15 @@ class Solution {
     constexpr static int three_scores[4] = {0, 5, 3, 2};
     int eventId;
     vector<int> rankedSchoolIds;
+    wstring name;
 
    public:
+    Event(int _eventId, int _podiumNumber, wstring _name) {
+      setEventId(_eventId);
+      setPodiumNumber(_podiumNumber);
+      setName(_name);
+    }
+
     inline bool setPodiumNumber(int number) {
       if (number == 3 || number == 5) {
         podiumNumber = number;
@@ -53,7 +76,10 @@ class Solution {
       }
     }
 
-    inline int setEventId(int id) { eventId = id; }
+    inline void setEventId(int id) { eventId = id; }
+
+    inline void setName(wstring _name) { name = _name; }
+    inline wstring getName() const { return name; }
 
     inline int getScoreAtRank(int rank) const {
       if (podiumNumber == 3) {
@@ -64,29 +90,49 @@ class Solution {
         return 0;
       }
     }
+
+    inline void setRankedSchoolIds(const vector<int>& ids) {
+      rankedSchoolIds = ids;
+    }
+    inline const vector<int>& getRankedSchoolIds() const {
+      return rankedSchoolIds;
+    }
   };
 
   class School {
    private:
-    vector<int> ranks;
-    vector<int> rankedGameIds;
+    vector<Record> records;
     int m, w;
     int score = 0, mscore = 0, wscore = 0;
     int schoolId;
-    string name;
+    wstring name;
 
    public:
-    enum { SCHOOL_ID, NAME, SCORE, MSCORE, WSCORE };
+    enum Fields { SCHOOL_ID, NAME, SCORE, MSCORE, WSCORE };
 
-    School() {}
-    // School(int _m, int _w) { configure(_m, _w); }
+    wstring toString() const {
+      wostringstream sout;
+      sout << schoolId << endl
+           << score << endl
+           << mscore << endl
+           << wscore << endl
+           << name << endl;
+      sout << records.size() << endl;
+      for (vector<Record>::const_iterator i = records.cbegin();
+           i != records.cend(); ++i) {
+        sout << i->toString() << endl;
+      }
+      return sout.str();
+    }
 
-    inline void configure(int _m, int _w) {
+    // School() {}
+    School(int _m, int _w, wstring _name) { init(_m, _w, _name); }
+
+    inline void init(int _m, int _w, wstring _name) {
       m = _m;
       w = _w;
-      rankedGameIds.clear();
-      ranks.clear();
-      ranks.resize(_m + _w + 1, 0);
+      name = _name;
+      records.clear();
     }
 
     /**
@@ -95,8 +141,7 @@ class Solution {
      * int rank: 项目排名, 1-5 or 1-3
      */
     void goal(int eventId, int rank) {
-      rankedGameIds.push_back(eventId);
-      ranks[eventId] = rank;
+      records.push_back(Record(eventId, rank));
       int scoreAtRank = events[eventId].getScoreAtRank(rank);
       score += scoreAtRank;
       if (eventId > m) {
@@ -122,7 +167,7 @@ class Solution {
       return a.name < b.name;
     }
 
-    static bool (*getCmp(int a))(const School&, const School&) {
+    static inline bool (*getCmp(Fields a))(const School&, const School&) {
       static bool (*cmpList[])(const School&, const School&) = {
           [SCHOOL_ID] = cmpSchoolId,
           [NAME] = cmpName,
@@ -133,8 +178,10 @@ class Solution {
     }
   };
 
+  class ui {};
+
  public:
-  void solve() {}
+  static void solve() {}
 };
 
 int main() { int n, m, w; }
