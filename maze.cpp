@@ -1,3 +1,15 @@
+/**
+ * @author: 1190501001 李恩宇
+ * @build_command: g++ -std=c++11 path/to/source.cpp
+ * @description:
+ * @input: 2 integers n, m in line 1 showing that the maze is n x m;
+ * then the following n lines, in each line there are a string of m 0 or 1s
+ * representing the map.
+ * @output: if there is a route, output all points on the route;
+ * if not, print "The route doesn't exist."
+ * @hint: Solution 类是算法核心.
+ */
+
 #include <iostream>
 #include <vector>
 
@@ -67,7 +79,6 @@ void solve(int n, int m, Point s, Point e, vector<vector<int>>& map) {
 
   stack.push(Status(s, 0));
   while (stack.size()) {
-    cout << 'a';
     Status* top = stack.top();
     if (top->pos == e) {
       break;
@@ -76,6 +87,7 @@ void solve(int n, int m, Point s, Point e, vector<vector<int>>& map) {
     } else {
       Point nxtPoint = top->pos + dirs[top->dir++];
       if (!(visited[nxtPoint.x][nxtPoint.y] || map[nxtPoint.x][nxtPoint.y])) {
+        visited[nxtPoint.x][nxtPoint.y] = 1;
         stack.push(Status(nxtPoint));
       }
     }
@@ -83,7 +95,7 @@ void solve(int n, int m, Point s, Point e, vector<vector<int>>& map) {
 
   if (stack.size()) {
     for (auto i = stack.begin(); i != stack.end(); ++i) {
-      cout << i->pos.x << ' ' << i->pos.y << endl;
+      cout << '(' << i->pos.x << ' ' << i->pos.y << ')' << endl;
     }
   } else {
     cout << "The route doesn't exist." << endl;
@@ -104,7 +116,6 @@ int main() {
       map[i][j] = grid;
     }
   }
-  cout << 'b' << endl;
   solve(n, m, begin, end, map);
 
   return 0;
