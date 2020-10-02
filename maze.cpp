@@ -1,7 +1,9 @@
 /**
  * @author: 1190501001 李恩宇
  * @build_command: g++ -std=c++11 path/to/source.cpp
- * @description:
+ * @description: 一个迷宫可用上图所示方阵 [m, n] 表示, 0 表示能通过, 1
+ * 表示不能通过. 现假设耗子从左上角 [1, 1] 进入迷宫, 编写算法, 寻求一条从右下角
+ * [m, n] 出去的路径.
  * @input: 2 integers n, m in line 1 showing that the maze is n x m;
  * then the following n lines, in each line there are a string of m 0 or 1s
  * representing the map.
@@ -95,7 +97,7 @@ void solve(int n, int m, Point s, Point e, vector<vector<int>>& map) {
 
   if (stack.size()) {
     for (auto i = stack.begin(); i != stack.end(); ++i) {
-      cout << '(' << i->pos.x << ' ' << i->pos.y << ')' << endl;
+      cout << '(' << i->pos.x << ", " << i->pos.y << ')' << endl;
     }
   } else {
     cout << "The route doesn't exist." << endl;
