@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +22,7 @@ class Product {
 
 class MyList<T> {
   public class MyNode {
-    public T value;
+    private T value;
     public MyNode next, prev;
 
     public MyNode() {
@@ -35,6 +36,10 @@ class MyList<T> {
 
     public T getValue() {
       return value;
+    }
+
+    public void setValue(T value) {
+      this.value = value;
     }
   }
 
@@ -122,10 +127,10 @@ class MyList<T> {
 }
 
 class Inventory {
-  static final String DATA_FILE = "inventory.dat";
-  MyList<Product> inventory = new MyList<Product>();
+  private static final String DATA_FILE = "inventory.dat";
+  private MyList<Product> list = new MyList<Product>();
 
-  static public class OutOfStockException extends Exception {
+  public static class OutOfStockException extends Exception {
     private static final long serialVersionUID = -5422073231991141527L;
 
     public OutOfStockException(String message) {
@@ -162,11 +167,14 @@ class Inventory {
   }
 
   public Product find(String name) {
-    Product result = null;
-    for (MyList<Product>.Iterator iterator = inventory.iterator(); iterator.hasNext();) {
-      Product product = iterator.next();
-      if (product.name.equals(name)) {
-        result = product;
+    return findPos(name).getValue();
+  }
+
+  public MyList<Product>.MyNode findPos(String name) {
+    MyList<Product>.MyNode result = null;
+    for (MyList<Product>.MyNode node = list.begin(); node != list.end(); node = node.next) {
+      if (node.getValue().name.equals(name)) {
+        result = node;
         break;
       }
     }
@@ -200,62 +208,204 @@ class Inventory {
     return product;
   }
 
-  public void save() throws FileNotFoundException, IOException {
+  public void save() throws IOException {
     File file = new File(DATA_FILE);
     ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-    objectOutputStream.writeObject(inventory);
+    objectOutputStream.writeObject(list);
     objectOutputStream.close();
   }
 
   @SuppressWarnings("unchecked")
-  public void load() throws FileNotFoundException, IOException, ClassNotFoundException {
+  public void loadFromFile() throws FileNotFoundException, IOException, ClassNotFoundException {
     File file = new File(DATA_FILE);
     ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-    inventory = (MyList<Product>) objectInputStream.readObject();
+    list = (MyList<Product>) objectInputStream.readObject();
     objectInputStream.close();
+  }
+
+  public MyList<Product> getList() {
+    return list;
   }
 }
 
 class CommandLineIO {
-  private static final String ERROR_MESSAGE = "数据格式错误, 请重新输入:";
+  private final String FORMAT_ERROR_MESSAGE = "数据格式错误, 请重新输入:";
+  private final String VALUE_ERROR_MESSAGE = "输入有误, 请重试";
+  private BufferedReader br;
 
-  public static int getInt(BufferedReader br) {
+  public CommandLineIO(BufferedReader br) {
+    this.br = br;
+  }
+
+  public int getInt() {
     while (true) {
       try {
         int result = Integer.valueOf(br.readLine());
         return result;
       } catch (NumberFormatException | IOException e) {
-        System.out.println(ERROR_MESSAGE);
+        System.out.println(FORMAT_ERROR_MESSAGE);
       }
     }
   }
 
-  public static double getDouble(BufferedReader br) {
+  public double getDouble() {
     while (true) {
       try {
         double result = Integer.valueOf(br.readLine());
         return result;
       } catch (NumberFormatException | IOException e) {
-        System.out.println(ERROR_MESSAGE);
+        System.out.println(FORMAT_ERROR_MESSAGE);
       }
     }
   }
 
-  public static String getString(BufferedReader br) {
+  public String getString() {
     while (true) {
       try {
         String result = br.readLine().strip();
         return result;
       } catch (IOException e) {
-        System.out.println(ERROR_MESSAGE);
+        System.out.println(FORMAT_ERROR_MESSAGE);
       }
+    }
+  }
+
+  public String getName() {
+    while (true) {
+      String name = getString();
+      if (name.length() != 0) {
+        return name;
+      }
+      println(VALUE_ERROR_MESSAGE);
+    }
+  }
+
+  public void pause() {
+    System.out.println("请按回车继续...");
+    try {
+      br.readLine();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void clear() {
+    final String CLEAR_COMMAND = System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ? "cmd.exe /c CLS"
+        : "sh -c clear";
+    try {
+      Runtime.getRuntime().exec(CLEAR_COMMAND);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public <E> void println(E obj) {
+    System.out.println(obj);
+  }
+
+  private void printTitle() {
+    println(" - 商品名称  品牌  单价  数量");
+  }
+
+  public void println(Inventory inventory) {
+    printTitle();
+    int number = 0;
+    for (MyList<Product>.MyNode node = inventory.getList().begin(); node != inventory.getList()
+        .end(); node = node.next) {
+      Product product = node.getValue();
+      System.out.format("%i. %s  %s  %.2d %i\n", number++, product.name, product.brand, product.price,
+          product.quantity);
     }
   }
 }
 
 public class Chapter_2_2 {
+  static final String VALUE_ERROR_MESSAGE = "输入有误, 请重试";
+
+  // private static void println(String obj) {
+  // System.out.println(obj);
+  // }
+
+  // private static void println(int obj) {
+  // System.out.println(obj);
+  // }
+
+  // private static void println(double obj) {
+  // System.out.println(obj);
+  // }
+
+  // private static void println() {
+  // System.out.println();
+  // }
+
   public static void main(String[] args) {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    Inventory inventory = new Inventory();
+    CommandLineIO io = new CommandLineIO(br);
 
+    // 营业即将开始
+    io.println("营业即将开始, 是否加载已保存的数据? (0: 否; 1: 是; 2: 退出程序)");
+    while (true) {
+      int opt = io.getInt();
+      if (opt == 2) {
+        return;
+      }
+      if (opt == 1) {
+        try {
+          inventory.loadFromFile();
+          io.println("成功载入已保存的数据");
+          break;
+        } catch (FileNotFoundException e) {
+          io.println("历史数据文件不存在, 未载入");
+          opt = 0;
+        } catch (IOException | ClassNotFoundException e) {
+          io.println("数据文件损坏, 未载入");
+          opt = 0;
+        }
+      }
+      if (opt == 0) {
+        break;
+      }
+      io.println(VALUE_ERROR_MESSAGE);
+    }
+
+    // 营业中
+    while (true) {
+      io.println("功能列表:");
+      io.println("1. 输出所有库存");
+      io.println("2. 进货");
+      io.println("3. 出货");
+      io.println("4. 查询商品信息");
+      io.println("0. 营业结束, 保存数据");
+      io.println("5. 更新商品信息");
+
+      int opt;
+      while (true) {
+        opt = io.getInt();
+        if (opt >= 0 && opt <= 5) {
+          break;
+        }
+        io.println(VALUE_ERROR_MESSAGE);
+      }
+
+      if (opt == 0) {
+        try {
+          inventory.save();
+          io.println("保存成功");
+        } catch (IOException e) {
+          e.printStackTrace();
+          io.println("保存失败");
+        }
+        break;
+      } else if (opt == 2) {
+        io.println(inventory);
+      } else if (opt == 3) {
+        Product newProduct = new Product();
+
+        while (true) {
+
+        }
+      }
+    }
   }
 }
