@@ -1,3 +1,13 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 class Product {
   public String name;
   public String brand;
@@ -112,9 +122,12 @@ class MyList<T> {
 }
 
 class Inventory {
+  static final String DATA_FILE = "inventory.dat";
   MyList<Product> inventory = new MyList<Product>();
 
   static public class OutOfStockException extends Exception {
+    private static final long serialVersionUID = -5422073231991141527L;
+
     public OutOfStockException(String message) {
       super(message);
     }
@@ -125,6 +138,8 @@ class Inventory {
   }
 
   static public class NegetiveQuantityException extends Exception {
+    private static final long serialVersionUID = -7696763976553701780L;
+
     public NegetiveQuantityException(String message) {
       super(message);
     }
@@ -135,6 +150,8 @@ class Inventory {
   }
 
   static public class ProductNotFoundException extends Exception {
+    private static final long serialVersionUID = -23939467884069524L;
+
     public ProductNotFoundException(String message) {
       super(message);
     }
@@ -182,10 +199,63 @@ class Inventory {
     product.quantity -= quantity;
     return product;
   }
+
+  public void save() throws FileNotFoundException, IOException {
+    File file = new File(DATA_FILE);
+    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+    objectOutputStream.writeObject(inventory);
+    objectOutputStream.close();
+  }
+
+  @SuppressWarnings("unchecked")
+  public void load() throws FileNotFoundException, IOException, ClassNotFoundException {
+    File file = new File(DATA_FILE);
+    ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+    inventory = (MyList<Product>) objectInputStream.readObject();
+    objectInputStream.close();
+  }
+}
+
+class CommandLineIO {
+  private static final String ERROR_MESSAGE = "数据格式错误, 请重新输入:";
+
+  public static int getInt(BufferedReader br) {
+    while (true) {
+      try {
+        int result = Integer.valueOf(br.readLine());
+        return result;
+      } catch (NumberFormatException | IOException e) {
+        System.out.println(ERROR_MESSAGE);
+      }
+    }
+  }
+
+  public static double getDouble(BufferedReader br) {
+    while (true) {
+      try {
+        double result = Integer.valueOf(br.readLine());
+        return result;
+      } catch (NumberFormatException | IOException e) {
+        System.out.println(ERROR_MESSAGE);
+      }
+    }
+  }
+
+  public static String getString(BufferedReader br) {
+    while (true) {
+      try {
+        String result = br.readLine().strip();
+        return result;
+      } catch (IOException e) {
+        System.out.println(ERROR_MESSAGE);
+      }
+    }
+  }
 }
 
 public class Chapter_2_2 {
   public static void main(String[] args) {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
   }
 }
