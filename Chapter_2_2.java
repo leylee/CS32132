@@ -1,3 +1,11 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 class Product {
   public String name;
   public String brand;
@@ -108,6 +116,7 @@ class MyList<T> {
 }
 
 class Inventory {
+  static final String DATA_FILE = "inventory.dat";
   MyList<Product> inventory = new MyList<Product>();
 
   public Product purchase(String name, int quantity) throws Exception {
@@ -139,6 +148,21 @@ class Inventory {
       }
     }
     throw new Exception("Cannot find this product");
+  }
+
+  public void save() throws FileNotFoundException, IOException {
+    File file = new File(DATA_FILE);
+    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+    objectOutputStream.writeObject(inventory);
+    objectOutputStream.close();
+  }
+
+  @SuppressWarnings("unchecked")
+  public void load() throws FileNotFoundException, IOException, ClassNotFoundException {
+    File file = new File(DATA_FILE);
+    ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+    inventory = (MyList<Product>) objectInputStream.readObject();
+    objectInputStream.close();
   }
 }
 
