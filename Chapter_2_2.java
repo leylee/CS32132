@@ -9,8 +9,12 @@ import java.io.ObjectOutputStream;
 class Product {
   public String name;
   public String brand;
-  public int price;
+  public double price;
   public int quantity;
+
+  public void check() {
+
+  }
 }
 
 class MyList<T> {
@@ -119,35 +123,73 @@ class Inventory {
   static final String DATA_FILE = "inventory.dat";
   MyList<Product> inventory = new MyList<Product>();
 
-  public Product purchase(String name, int quantity) throws Exception {
-    if (quantity <= 0) {
-      throw new Exception("Quantity should be greater than 0");
+  static public class OutOfStockException extends Exception {
+    public OutOfStockException(String message) {
+      super(message);
     }
+
+    public OutOfStockException() {
+      this("Cannot sell more goods than stock");
+    }
+  }
+
+  static public class NegetiveQuantityException extends Exception {
+    public NegetiveQuantityException(String message) {
+      super(message);
+    }
+
+    public NegetiveQuantityException() {
+      this("Quantity should be greater than 0");
+    }
+  }
+
+  static public class ProductNotFoundException extends Exception {
+    public ProductNotFoundException(String message) {
+      super(message);
+    }
+
+    public ProductNotFoundException() {
+      this("Cannot find this product");
+    }
+  }
+
+  public Product find(String name) {
+    Product result = null;
     for (MyList<Product>.Iterator iterator = inventory.iterator(); iterator.hasNext();) {
       Product product = iterator.next();
       if (product.name.equals(name)) {
-        product.quantity += quantity;
-        return product;
+        result = product;
+        break;
       }
     }
-    throw new Exception("Cannot find this product");
+    return result;
+  }
+
+  public Product purchase(String name, int quantity) throws Exception {
+    if (quantity <= 0) {
+      throw new NegetiveQuantityException();
+    }
+    Product product = find(name);
+    if (product == null) {
+      throw new ProductNotFoundException();
+    }
+    product.quantity += quantity;
+    return product;
   }
 
   public Product sell(String name, int quantity) throws Exception {
     if (quantity <= 0) {
-      throw new Exception("Quantity should be greater than 0");
+      throw new NegetiveQuantityException();
     }
-    for (MyList<Product>.Iterator iterator = inventory.iterator(); iterator.hasNext();) {
-      Product product = iterator.next();
-      if (product.name.equals(name)) {
-        if (product.quantity < quantity) {
-          throw new Exception("Cannot sell more goods than stock");
-        }
-        product.quantity += quantity;
-        return product;
-      }
+    Product product = find(name);
+    if (product == null) {
+      throw new ProductNotFoundException();
     }
-    throw new Exception("Cannot find this product");
+    if (product.quantity < quantity) {
+      throw new OutOfStockException();
+    }
+    product.quantity -= quantity;
+    return product;
   }
 
   public void save() throws FileNotFoundException, IOException {
