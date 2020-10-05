@@ -10,7 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-class Product {
+class Product implements Serializable {
+  private static final long serialVersionUID = 5791402997806683378L;
   public String name;
   public String brand;
   public double price;
@@ -168,8 +169,21 @@ class Inventory {
     }
   }
 
+  static public class ProductExistsError extends Exception {
+    private static final long serialVersionUID = -2464719080946839145L;
+
+    public ProductExistsError(String message) {
+      super(message);
+    }
+
+    public ProductExistsError() {
+      this("Cannot find this product");
+    }
+  }
+
   public Product find(String name) {
-    return findPos(name).getValue();
+    MyList<Product>.MyNode pos = findPos(name);
+    return pos == null ? null : pos.getValue();
   }
 
   public MyList<Product>.MyNode findPos(String name) {
@@ -181,6 +195,28 @@ class Inventory {
       }
     }
     return result;
+  }
+
+  public void add(Product product) throws ProductExistsError {
+    MyList<Product>.MyNode node = list.begin();
+    while (node != list.end()) {
+      if (node.getValue().name.equals(product.name)) {
+        throw new ProductExistsError();
+      }
+      if (node.getValue().price > product.price) {
+        break;
+      }
+      node = node.next;
+    }
+    list.insert(node, product);
+  }
+
+  public void remove(String name) throws ProductNotFoundException {
+    try {
+      list.remove(findPos(name));
+    } catch (NullPointerException e) {
+      throw new ProductNotFoundException();
+    }
   }
 
   public Product purchase(String name, int quantity) throws ProductNotFoundException {
@@ -233,7 +269,7 @@ class CommandLineIO {
     this.br = br;
   }
 
-  public int getInt() {
+  private int getInt() {
     while (true) {
       try {
         int result = Integer.valueOf(br.readLine());
@@ -244,10 +280,10 @@ class CommandLineIO {
     }
   }
 
-  public double getDouble() {
+  private double getDouble() {
     while (true) {
       try {
-        double result = Integer.valueOf(br.readLine());
+        double result = Double.valueOf(br.readLine());
         return result;
       } catch (NumberFormatException | IOException e) {
         System.out.println(FORMAT_ERROR_MESSAGE);
@@ -255,7 +291,7 @@ class CommandLineIO {
     }
   }
 
-  public String getString() {
+  private String getString() {
     while (true) {
       try {
         String result = br.readLine().strip();
@@ -276,7 +312,7 @@ class CommandLineIO {
     }
   }
 
-  public int getOpt(int max) {
+  public int getOption(int max) {
     while (true) {
       int opt = getInt();
       if (opt >= 0 && opt <= max) {
@@ -333,14 +369,22 @@ class CommandLineIO {
     println(" - 商品名称  品牌  单价  数量");
   }
 
+  private void println(Product product, int number) {
+    System.out.format("%d. %s  %s  %.2f  %d\n", number, product.name, product.brand, product.price, product.quantity);
+  }
+
+  public void println(Product product) {
+    printTitle();
+    println(product, 0);
+  }
+
   public void println(Inventory inventory) {
     printTitle();
     int number = 0;
     for (MyList<Product>.MyNode node = inventory.getList().begin(); node != inventory.getList()
         .end(); node = node.next) {
       Product product = node.getValue();
-      System.out.format("%i. %s  %s  %.2d %i\n", number++, product.name, product.brand, product.price,
-          product.quantity);
+      println(product, number++);
     }
   }
 }
@@ -372,7 +416,7 @@ public class Chapter_2_2 {
     while (true) {
       // 营业即将开始
       io.println("营业即将开始, 是否加载已保存的数据? (0: 否; 1: 是; 2: 退出程序)");
-      int opt = io.getOpt(2);
+      int opt = io.getOption(2);
       if (opt == 2) {
         return;
       }
@@ -390,29 +434,31 @@ public class Chapter_2_2 {
       // 营业中
       while (true) {
         io.println("功能列表:");
-        io.println("0. 营业结束, 保存数据");
+        io.println("0. 营业结束");
         io.println("1. 输出所有库存");
         io.println("2. 进货");
         io.println("3. 出货");
         io.println("4. 查询商品信息");
         io.println("5. 更新商品信息");
 
-        opt = io.getOpt(5);
+        opt = io.getOption(5);
 
         if (opt == 0) {
-          try {
-            inventory.save();
-            io.println("保存成功");
-          } catch (IOException e) {
-            e.printStackTrace();
-            io.println("保存失败");
+          io.println("保存数据? (0: 不保存; 1: 保存)");
+          opt = io.getOption(1);
+          if (opt == 1) {
+            try {
+              inventory.save();
+              io.println("保存成功");
+            } catch (IOException e) {
+              e.printStackTrace();
+              io.println("保存失败");
+            }
           }
           break;
         } else if (opt == 1) {
           io.println(inventory);
         } else if (opt == 2) {
-          io.println(inventory);
-        } else if (opt == 3) {
           Product newProduct = new Product();
           io.println("商品名称");
           newProduct.name = io.getName();
@@ -422,6 +468,74 @@ public class Chapter_2_2 {
             inventory.purchase(newProduct.name, newProduct.quantity);
           } catch (Inventory.ProductNotFoundException e) {
             io.println("库存中没有此商品, 请补充商品信息");
+            io.println("商品品牌");
+            newProduct.brand = io.getName();
+            io.println("商品单价");
+            newProduct.price = io.getPrice();
+            try {
+              inventory.add(newProduct);
+            } catch (Inventory.ProductExistsError e1) {
+              e1.printStackTrace();
+            }
+          }
+        } else if (opt == 3) {
+          String name;
+          int quantity;
+          try {
+            io.println("商品名称");
+            name = io.getName();
+            if (inventory.find(name) == null) {
+              throw new Inventory.ProductNotFoundException();
+            }
+            io.println("商品数量");
+            quantity = io.getQuantity();
+            Product product = inventory.sell(name, quantity);
+            io.println("出货成功");
+            if (product.quantity == 0) {
+              inventory.remove(name);
+            }
+          } catch (Inventory.ProductNotFoundException e) {
+            io.println("未找到该商品");
+          } catch (Inventory.OutOfStockException e) {
+            io.println("库存不足");
+          }
+        } else if (opt == 4) {
+          String name;
+          try {
+            io.println("商品名称");
+            name = io.getName();
+            Product product = inventory.find(name);
+            if (product == null) {
+              throw new Inventory.ProductNotFoundException();
+            }
+            io.println(product);
+          } catch (Exception e) {
+            io.println("未找到该商品");
+          }
+        } else if (opt == 5) {
+          try {
+            String name;
+            io.println("原商品名称");
+            name = io.getName();
+            Product product = inventory.find(name);
+            if (product == null) {
+              throw new Inventory.ProductNotFoundException();
+            }
+            inventory.remove(name);
+            io.println("新商品名称");
+            product.name = io.getName();
+            io.println("新商品品牌");
+            product.brand = io.getName();
+            io.println("新商品单价");
+            product.price = io.getPrice();
+            io.println("新商品数量");
+            product.quantity = io.getQuantity();
+            inventory.add(product);
+            io.println("商品信息更新成功");
+          } catch (Inventory.ProductNotFoundException e) {
+            io.println("未找到该商品");
+          } catch (Exception e) {
+            e.printStackTrace();
           }
         }
       }
