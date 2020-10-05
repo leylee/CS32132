@@ -1,7 +1,7 @@
 
 /**
  * @author: 1190501001 李恩宇
- * @build_command: g++ -std=c++11 path/to/source.cpp
+ * @build_command: javac --release 11 path/to/source.java
  * @description: 链表的维护与文件形式的保存
  * 用链表结构的有序表表示某商场家电的库存模型.
  * 当有提货或进货时需要对该链表进行维护. 每个工作日结束之后,
