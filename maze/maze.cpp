@@ -1,6 +1,6 @@
 /**
  * @author: 1190501001 李恩宇
- * @build_command: g++ -std=c++11 path/to/source.cpp
+ * @build_command: g++ -std=c++11 maze.cpp
  * @description: 一个迷宫可用上图所示方阵 [m, n] 表示, 0 表示能通过, 1
  * 表示不能通过. 现假设耗子从左上角 [1, 1] 进入迷宫, 编写算法, 寻求一条从右下角
  * [m, n] 出去的路径.
@@ -14,6 +14,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include "mystack.hpp"
 
 using namespace std;
 
@@ -35,42 +37,6 @@ struct Status {
   Status() {}
   Status(int _x, int _y, int _dir = 0) : pos(_x, _y), dir(_dir) {}
   Status(Point p, int _dir = 0) : pos(p), dir(_dir) {}
-};
-
-template <typename T>
-class Stack {
- private:
-  int _size;
-  T* list;
-
- public:
-  Stack(int size) {
-    _size = 0;
-    list = new T[size];
-  }
-
-  ~Stack() { delete list; }
-
-  void push(T s) { list[_size++] = s; }
-  bool pop() {
-    if (_size) {
-      --_size;
-      return true;
-    } else {
-      return false;
-    }
-  }
-  T* top() {
-    if (_size) {
-      return list + _size - 1;
-    } else {
-      return nullptr;
-    }
-  }
-  int size() { return _size; }
-  T* container() { return list; }
-  T* begin() { return list; }
-  T* end() { return list + _size; }
 };
 
 void solve(int n, int m, Point s, Point e, vector<vector<int>>& map) {

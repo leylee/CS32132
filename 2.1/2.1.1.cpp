@@ -1,6 +1,6 @@
 /**
  * @author: 1190501001 李恩宇
- * @build command: g++ -std=c++11 path/to/source.cpp
+ * @compile: g++ -std=c++11 2.1.1.cpp
  * @description: 已知一个单链表,
  *  1. 求倒数第k个元素;
  *  2. 求中点元素.
@@ -20,89 +20,9 @@
 
 #include <iostream>
 
+#include "mylist.hpp"
+
 using namespace std;
-
-template <typename T>
-struct Node {
-  T value;
-  Node* next;
-  Node() { next = nullptr; }
-
-  Node(const T& t) {
-    value = t;
-    next = nullptr;
-  }
-};
-
-template <typename T>
-struct List;
-template <typename T>
-ostream& operator<<(ostream& os, const List<T>& list);
-
-template <typename T>
-struct List {
-  typedef Node<T> NodeT;
-  typedef NodeT* NodeTptr;
-  int size;
-  NodeTptr headptr;
-
-  List() {
-    headptr = new NodeT();
-    headptr->next = headptr;
-    size = 0;
-  }
-
-  NodeTptr push_front(const T& t) { return insert(headptr, t); }
-
-  NodeTptr insert(NodeTptr indexptr, const T& t) {
-    ++size;
-    NodeTptr newptr = new NodeT(t);
-    newptr->next = indexptr->next;
-    indexptr->next = newptr;
-    return newptr;
-  }
-
-  NodeTptr begin() const { return headptr->next; }
-
-  NodeTptr end() const { return headptr; }
-
-  bool pop_front() { return remove(headptr->next); }
-
-  bool remove(NodeTptr removedptr) {
-    if (removedptr == headptr) return false;
-    NodeTptr nextptr = removedptr->next;
-    removedptr->value = nextptr->value;
-    removedptr->next = nextptr->next;
-    delete nextptr;
-    return true;
-  }
-
-  // void print() {
-  //   for (NodeTptr ptr = begin(); ptr != end(); ptr = ptr->next) {
-  //     cout << ptr->value << ' ';
-  //   }
-  //   cout << endl <<
-  // }
-
-  friend ostream& operator<<<T>(ostream& os, const List<T>& list);
-};
-
-template <typename T>
-ostream& operator<<(ostream& os, const List<T>& list) {
-  os << '[';
-  bool first = true;
-  for (auto ptr = list.begin(); ptr != list.end(); ptr = ptr->next) {
-    if (!first) {
-      os << ", ";
-    } else {
-      first = false;
-    }
-
-    os << ptr->value;
-  }
-  os << ']';
-  return os;
-}
 
 void solve(int k, List<int>& list) {
   bool illegal;
