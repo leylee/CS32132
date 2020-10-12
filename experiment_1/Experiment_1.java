@@ -1,6 +1,7 @@
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 class ExpressionUtil {
   // 原始输入表达式
@@ -17,15 +18,7 @@ class ExpressionUtil {
   final int OPERATORS = 0b0000100;
   final int NUMBERS = 0b0001000;
   // 合法的二元运算符
-  private static final ArrayList<Character> operators = { '+', '-', '*', '/', '%' };
-
-  private int match() throws Exception {
-    return match(0, 0);
-  }
-
-  private int match(int index) throws Exception {
-    return match(index, LEFT_BRACKET | NUMBERS, leftBrackets);
-  }
+  private static final Set<Character> operators = new TreeSet<>(Arrays.asList('+', '-', '*', '/', '%'));
 
   /**
    * 匹配表达式, 并将表达式分割存入 strs
@@ -35,10 +28,9 @@ class ExpressionUtil {
    * @return
    * @throws Exception
    */
-  private int match(int index, int type) throws Exception {
-    Pattern regex;
-    Matcher matches;
-    int i = index;
+  private int match() throws Exception {
+    int type = NUMBERS | LEFT_BRACKET;
+    int i = 0;
     int leftBracketsCount = 0;
 
     while (true) {
@@ -52,7 +44,7 @@ class ExpressionUtil {
         if ((type & END) != 0 && leftBracketsCount == 0) {
           return i;
         } else {
-          throw new Exception("Closing brackets doesn't match opening brackets");
+          throw new Exception("Expression ended unexpectedly");
         }
       }
 
@@ -71,19 +63,29 @@ class ExpressionUtil {
       if ((type & RIGHT_BRACKET) != 0) {
         if (string.charAt(i) == ')') {
           if (leftBracketsCount == 0) {
-            throw new Exception("Closing brackets doesn't match opening brackets");
+            throw new Exception(String.format("Closing brackets doesn't match opening brackets in position %i", i));
           }
           strs.add(")");
           ++i;
           --leftBracketsCount;
-          type = END | OPERATORS;
+          type = END | RIGHT_BRACKET | OPERATORS;
+          continue;
         }
       }
 
       // 如果当前位置可以是运算符
       if ((type & OPERATORS) != 0) {
-        if (operators. string.charAt(i)
+        if (operators.contains(string.charAt(i))) {
+          strs.add(String.valueOf(string.charAt(i)));
+          ++i;
+          type = LEFT_BRACKET | NUMBERS;
+          continue;
+        } else {
+          throw new Exception(String.format("Wrong or no operator in position %i", i));
+        }
       }
+
+      // 如果当前位置可以是数字
       if ((type & NUMBERS) != 0) {
         String number = "";
         if (string.charAt(i) == '-') {
@@ -94,8 +96,25 @@ class ExpressionUtil {
           ++i;
         }
         if (i == string.length()) {
-
+          throw new Exception("Expression ended unexpectedly");
         }
+        boolean decimal = false;
+        while (true) {
+          char c = string.charAt(i);
+          if (c == '.') {
+            if (decimal == true) {
+              throw new Exception(String.format("Unexpected decimal in position %i", i));
+            } else {
+              number += c;
+            }
+          } else if (Character.isDigit(c)) {
+            number += c;
+          } else {
+            break;
+          }
+          ++i;
+        }
+        type = END | RIGHT_BRACKET | OPERATORS;
       }
     }
   }
@@ -105,7 +124,7 @@ class ExpressionUtil {
    * 
    * @param expression
    */
-  public ExpressionUtil(String expression) {
+  public ExpressionUtil(String expression) throws Exception {
     string = expression;
     match();
   }
@@ -113,6 +132,10 @@ class ExpressionUtil {
 
 public class Experiment_1 {
   public static void main(String[] args) {
-
+    try {
+      System.out.println(new ExpressionUtil("1 + 2 - 3 * (345 + 789)"));
+    } catch (Exception e) {
+      System.out.println(e);
+    }
   }
 }
