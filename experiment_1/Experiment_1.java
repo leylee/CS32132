@@ -1,13 +1,20 @@
+// package experiment_1;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 class ExpressionUtil {
   // 原始输入表达式
-  private String string;
+  protected String string;
   // 经过分割的表达式, 每个 String 存储一个数或运算符
-  private ArrayList<String> strs;
+  protected ArrayList<String> strs = new ArrayList<>();
   // 表达式是否合法
   boolean illegal = true;
 
@@ -20,6 +27,8 @@ class ExpressionUtil {
   // 合法的二元运算符
   private static final Set<Character> operators = new TreeSet<>(Arrays.asList('+', '-', '*', '/', '%'));
 
+  // 各个运算符优先级
+
   /**
    * 匹配表达式, 并将表达式分割存入 strs
    * 
@@ -31,8 +40,10 @@ class ExpressionUtil {
   private int match() throws Exception {
     int type = NUMBERS | LEFT_BRACKET;
     int i = 0;
+    // 记录当前括号层数
     int leftBracketsCount = 0;
 
+    // 按照从前到后的顺序, 判断下一个元素是否可匹配该类型. 若可匹配, 则直接 continue, 进行下一轮匹配.
     while (true) {
       // 去除前导空白字符
       while (i < string.length() && string.charAt(i) == ' ') {
@@ -63,7 +74,7 @@ class ExpressionUtil {
       if ((type & RIGHT_BRACKET) != 0) {
         if (string.charAt(i) == ')') {
           if (leftBracketsCount == 0) {
-            throw new Exception(String.format("Closing brackets doesn't match opening brackets in position %i", i));
+            throw new Exception(String.format("Closing brackets doesn't match opening brackets in position %d", i));
           }
           strs.add(")");
           ++i;
@@ -81,41 +92,62 @@ class ExpressionUtil {
           type = LEFT_BRACKET | NUMBERS;
           continue;
         } else {
-          throw new Exception(String.format("Wrong or no operator in position %i", i));
+          throw new Exception(String.format("Wrong or no operator in position %d", i));
         }
       }
 
       // 如果当前位置可以是数字
       if ((type & NUMBERS) != 0) {
-        String number = "";
+        String number = ""; // 最终生成的数值字符串
+
+        // 如果有符号, 则添加符号
         if (string.charAt(i) == '-') {
           number = "-";
           ++i;
+          // 去除负号后的空白
+          while (i < string.length() && string.charAt(i) == ' ') {
+            ++i;
+          }
+          // 如果读取负号后到达表达式末尾, 则表达式非法
+          if (i == string.length()) {
+            throw new Exception("Expression ended unexpectedly");
+          }
         }
-        while (i < string.length() && string.charAt(i) == ' ') {
-          ++i;
+        // 如果数值第一位不是小数点或数字, 则表达式非法
+        char first = string.charAt(i);
+        if (!(first == '.' || Character.isDigit(first))) {
+          throw new Exception(String.format("Bad input in position %d", i));
         }
-        if (i == string.length()) {
-          throw new Exception("Expression ended unexpectedly");
-        }
+
+        // 记录是否出现过小数点
         boolean decimal = false;
         while (true) {
+          if (i == string.length()) {
+            break;
+          }
           char c = string.charAt(i);
-          if (c == '.') {
+          if (c == '.') { // 判断小数点
             if (decimal == true) {
-              throw new Exception(String.format("Unexpected decimal in position %i", i));
+              throw new Exception(String.format("Unexpected decimal point in position %d", i));
             } else {
+              decimal = true;
               number += c;
+              ++i;
             }
-          } else if (Character.isDigit(c)) {
+          } else if (Character.isDigit(c)) { // 判断数字
             number += c;
+            ++i;
           } else {
             break;
           }
-          ++i;
         }
+        strs.add(number);
         type = END | RIGHT_BRACKET | OPERATORS;
+        continue;
       }
+
+      // 如果都没有匹配上, 则表达式非法
+      throw new Exception(String.format("Bad input in position %d", i));
     }
   }
 
@@ -128,14 +160,79 @@ class ExpressionUtil {
     string = expression;
     match();
   }
+
+  public ArrayList<String> getStrs() {
+    return strs;
+  }
+
 }
 
 public class Experiment_1 {
+  private static Map<String, Integer> operatorsPriority = Map.of("+", 1, "-", 1, "*", 2, "/", 2, "%", 2);
+
   public static void main(String[] args) {
-    try {
-      System.out.println(new ExpressionUtil("1 + 2 - 3 * (345 + 789)"));
-    } catch (Exception e) {
-      System.out.println(e);
+    Number a = Double.valueOf(2);
+    Number b = Integer.valueOf(9);
+    System.out.println(a.intValue() + b.intValue());
+
+    BufferedReader br = new BufferedReader(new java.io.InputStreamReader(System.in));
+    while (true) {
+      try {
+        // 生成后缀表达式时, 用于存储运算符
+        Stack<String> operatorsStack = new Stack<>();
+        // 生成的或缀表达式
+        ArrayList<String> postfixNotation = new ArrayList<>();
+        // 计算后缀表达式时, 用于存储数值
+        Stack<Number> numbersStack = new Stack<>();
+        // 计算后缀表达式时, 用于存储数值类型
+        Stack<Boolean> doubleTypeStack = new Stack<>();
+
+        String str;
+        str = br.readLine();
+        ExpressionUtil expression = new ExpressionUtil(str);
+        ArrayList<String> elementList = expression.getStrs();
+        System.out.println(elementList);
+        final Set<String> operatorsSet = operatorsPriority.keySet();
+
+        // 生成后缀表达式
+        for (String element : elementList) {
+          // System.out.println(operatorsStack);
+          // System.out.println(postfixStack);
+          if (element.equals("(")) {
+            operatorsStack.push(element);
+          } else if (element.equals(")")) {
+            String operator;
+            while (true) {
+              operator = operatorsStack.pop();
+              if (operator.equals("(")) {
+                break;
+              }
+              postfixNotation.add(operator);
+            }
+          } else if (operatorsSet.contains(element)) {
+            while (!operatorsStack.empty() && operatorsSet.contains(operatorsStack.peek())
+                && operatorsPriority.get(operatorsStack.peek()) >= operatorsPriority.get(element)) {
+              postfixNotation.add(operatorsStack.pop());
+            }
+            operatorsStack.push(element);
+          } else {
+            postfixNotation.add(element);
+          }
+        }
+        while (!operatorsStack.empty()) {
+          postfixNotation.add(operatorsStack.pop());
+        }
+
+        System.out.println("Postfix notation:");
+        for (String element : postfixNotation) {
+          System.out.print(element);
+          System.out.print(" ");
+        }
+        System.out.println();
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 }
