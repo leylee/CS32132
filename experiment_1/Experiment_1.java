@@ -1,3 +1,16 @@
+/**
+ * @author: 1190501001 李恩宇
+ * @build_command: javac --release 11 Experiment_1.java
+ * @description: 使用栈完成中缀表达式到后缀表达式的转换, 并利用栈完成后缀表达式的求值.
+ * 1.	键盘可以重复输入中缀算术表达式;
+ * 2.	编程实现转换成后缀表达式输出;
+ * 3.	再对该后缀表达式求值计算输出结果;
+ * 4.	可接受的运算符: +, -, *, /, %, (, );
+ * 5.	可接受的数字: 整数, 小数, 负数.
+ * @input: 循环输入中缀表达式
+ * @output: 输出转换后的中缀表达式和表达式的求值结果 / 输出表达式错误信息
+ */
+
 // package experiment_1;
 
 import java.io.BufferedReader;
