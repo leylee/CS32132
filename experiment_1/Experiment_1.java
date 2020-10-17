@@ -171,27 +171,21 @@ public class Experiment_1 {
   private static Map<String, Integer> operatorsPriority = Map.of("+", 1, "-", 1, "*", 2, "/", 2, "%", 2);
 
   public static void main(String[] args) {
-    Number a = Double.valueOf(2);
-    Number b = Integer.valueOf(9);
-    System.out.println(a.intValue() + b.intValue());
 
     BufferedReader br = new BufferedReader(new java.io.InputStreamReader(System.in));
     while (true) {
       try {
         // 生成后缀表达式时, 用于存储运算符
         Stack<String> operatorsStack = new Stack<>();
-        // 生成的或缀表达式
+        // 生成的后缀表达式
         ArrayList<String> postfixNotation = new ArrayList<>();
-        // 计算后缀表达式时, 用于存储数值
-        Stack<Number> numbersStack = new Stack<>();
-        // 计算后缀表达式时, 用于存储数值类型
-        Stack<Boolean> doubleTypeStack = new Stack<>();
 
         String str;
+        System.out.print(">>> ");
         str = br.readLine();
         ExpressionUtil expression = new ExpressionUtil(str);
         ArrayList<String> elementList = expression.getStrs();
-        System.out.println(elementList);
+        // System.out.println(elementList);
         final Set<String> operatorsSet = operatorsPriority.keySet();
 
         // 生成后缀表达式
@@ -230,8 +224,71 @@ public class Experiment_1 {
         }
         System.out.println();
 
+        // 计算后缀表达式时, 用于存储数值
+        Stack<Number> numbersStack = new Stack<>();
+        // 计算后缀表达式时, 用于存储数值类型
+        Stack<Boolean> doubleTypeStack = new Stack<>();
+
+        for (String element : postfixNotation) {
+          if (operatorsSet.contains(element)) { // 如果当前元素是运算符
+            Number rnumber = numbersStack.pop(), lnumber = numbersStack.pop();
+            boolean doubleType = doubleTypeStack.pop() || doubleTypeStack.pop();
+            doubleTypeStack.push(doubleType);
+            if (doubleType) {
+              double lDouble = lnumber.doubleValue();
+              double rDouble = rnumber.doubleValue();
+              switch (element) {
+                case "+":
+                  numbersStack.push(lDouble + rDouble);
+                  break;
+                case "-":
+                  numbersStack.push(lDouble - rDouble);
+                  break;
+                case "*":
+                  numbersStack.push(lDouble * rDouble);
+                  break;
+                case "/":
+                  numbersStack.push(lDouble / rDouble);
+                  break;
+                case "%":
+                  numbersStack.push(lDouble % rDouble);
+                  break;
+              }
+            } else {
+              int lInteger = lnumber.intValue();
+              int rInteger = rnumber.intValue();
+              switch (element) {
+                case "+":
+                  numbersStack.push(lInteger + rInteger);
+                  break;
+                case "-":
+                  numbersStack.push(lInteger - rInteger);
+                  break;
+                case "*":
+                  numbersStack.push(lInteger * rInteger);
+                  break;
+                case "/":
+                  numbersStack.push(lInteger / rInteger);
+                  break;
+                case "%":
+                  numbersStack.push(lInteger % rInteger);
+                  break;
+              }
+            }
+          } else { // 如果是数字
+            if (element.contains(".")) {
+              numbersStack.push(Double.valueOf(element));
+              doubleTypeStack.push(true);
+            } else {
+              numbersStack.push(Integer.valueOf(element));
+              doubleTypeStack.push(false);
+            }
+          }
+        }
+
+        System.out.println("The result is " + numbersStack.pop() + "\n");
       } catch (Exception e) {
-        e.printStackTrace();
+        System.out.println("Error: " + e.getMessage());
       }
     }
   }
