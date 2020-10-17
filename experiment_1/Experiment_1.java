@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -176,7 +175,7 @@ public class Experiment_1 {
     while (true) {
       try {
         // 生成后缀表达式时, 用于存储运算符
-        Stack<String> operatorsStack = new Stack<>();
+        MyStack<String> operatorsStack = new MyStack<>();
         // 生成的后缀表达式
         ArrayList<String> postfixNotation = new ArrayList<>();
 
@@ -225,9 +224,9 @@ public class Experiment_1 {
         System.out.println();
 
         // 计算后缀表达式时, 用于存储数值
-        Stack<Number> numbersStack = new Stack<>();
+        MyStack<Number> numbersStack = new MyStack<>();
         // 计算后缀表达式时, 用于存储数值类型
-        Stack<Boolean> doubleTypeStack = new Stack<>();
+        MyStack<Boolean> doubleTypeStack = new MyStack<>();
 
         for (String element : postfixNotation) {
           if (operatorsSet.contains(element)) { // 如果当前元素是运算符
