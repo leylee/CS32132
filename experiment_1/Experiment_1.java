@@ -1,3 +1,5 @@
+package experiment_1;
+
 /**
  * @author: 1190501001 李恩宇
  * @build_command: javac --release 11 Experiment_1.java
@@ -14,12 +16,10 @@
 // package experiment_1;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 class ExpressionUtil {

@@ -1,3 +1,5 @@
+package chapter_2_2;
+
 import java.io.Serializable;
 
 class MyList<T> implements Serializable {

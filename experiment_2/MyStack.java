@@ -1,4 +1,4 @@
-package experiment_1;
+package experiment_2;
 
 public class MyStack<T> extends MyList<T> {
 
