@@ -1,11 +1,18 @@
 package experiment_2;
 
 import java.io.Serializable;
+import java.io.ObjectInputFilter.Status;
 import java.util.ArrayList;
+
+import javax.xml.crypto.Data;
 
 public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> implements Serializable {
 
   private static final long serialVersionUID = -2176296641657153564L;
+
+  private enum Child {
+    leftChild, rightChild, self
+  };
 
   private class BinaryLinkedNode<T extends Comparable<? super T>> {
     T value;
@@ -23,28 +30,38 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
       this.leftChild = leftSon;
       this.rightChild = rightSon;
     }
-  }
 
-  private enum Child {
-    leftChild, rightChild
-  };
-
-  private int size;
-  private BinaryLinkedNode<DataType> root = new BinaryLinkedNode<>();
-
-  public BinaryLinkedTree(ArrayList<DataType> datas, ArrayList<Integer> preorderSequence) {
-    class Status {
-      Child child;
-      BinaryLinkedNode<DataType> node;
-
-      Status(Child child, BinaryLinkedNode<DataType> node) {
-        this.child = child;
-        this.node = node;
-      }
+    @Override
+    public String toString() {
+      // TODO Auto-generated method stub
+      return value == null ? "null" : value.toString();
     }
 
+  }
+
+  private class Status<T extends Comparable<? super T>> {
+    Child child;
+    BinaryLinkedNode<T> node;
+
+    Status(Child child, BinaryLinkedNode<T> node) {
+      this.child = child;
+      this.node = node;
+    }
+
+    @Override
+    public String toString() {
+      return "Status [child=" + child + ", node=" + node + "]";
+    }
+  }
+
+  private int size;
+  private BinaryLinkedNode<DataType> root;
+
+  public BinaryLinkedTree(ArrayList<DataType> datas, ArrayList<Integer> preorderSequence) {
+
     MyStack<Status> stack = new MyStack<>();
-    stack.push(new Status(Child.rightChild, root));
+    BinaryLinkedNode<DataType> head = new BinaryLinkedNode<>();
+    stack.push(new Status(Child.rightChild, head));
 
     for (int curID : preorderSequence) {
       Status curStatus = stack.peek();
@@ -134,5 +151,91 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
 
   public ArrayList<DataType> recursionInorderTraverse() {
     return recursionInorderTraverse(root.rightChild);
+  }
+
+  public ArrayList<DataType> iterationPreorderTraverse() {
+    ArrayList<DataType> answer = new ArrayList<>();
+    MyStack<Status<DataType>> stack = new MyStack<>();
+
+    stack.push(new Status<DataType>(Child.leftChild, root.rightChild));
+
+    while (!stack.empty()) {
+      Status<DataType> curStatus = stack.peek();
+      // System.out.println(stack);
+
+      if (curStatus.node == null) {
+        stack.pop();
+        continue;
+      }
+
+      if (curStatus.child == Child.leftChild) {
+        answer.add(curStatus.node.value);
+        curStatus.child = Child.rightChild;
+        stack.push(new Status(Child.leftChild, curStatus.node.leftChild));
+      } else {
+        stack.pop();
+        stack.push(new Status(Child.leftChild, curStatus.node.rightChild));
+      }
+    }
+
+    return answer;
+  }
+
+  public ArrayList<DataType> iterationInorderTraverse() {
+    ArrayList<DataType> answer = new ArrayList<>();
+    MyStack<Status<DataType>> stack = new MyStack<>();
+
+    stack.push(new Status<DataType>(Child.leftChild, root.rightChild));
+
+    while (!stack.empty()) {
+      Status<DataType> curStatus = stack.peek();
+      // System.out.println(stack);
+
+      if (curStatus.node == null) {
+        stack.pop();
+        continue;
+      }
+
+      if (curStatus.child == Child.leftChild) {
+        curStatus.child = Child.rightChild;
+        stack.push(new Status(Child.leftChild, curStatus.node.leftChild));
+      } else {
+        answer.add(curStatus.node.value);
+        stack.pop();
+        stack.push(new Status(Child.leftChild, curStatus.node.rightChild));
+      }
+    }
+
+    return answer;
+  }
+
+  public ArrayList<DataType> iterationPostorderTraverse() {
+    ArrayList<DataType> answer = new ArrayList<>();
+    MyStack<Status<DataType>> stack = new MyStack<>();
+
+    stack.push(new Status<DataType>(Child.leftChild, root.rightChild));
+
+    while (!stack.empty()) {
+      Status<DataType> curStatus = stack.peek();
+      // System.out.println(stack);
+
+      if (curStatus.node == null) {
+        stack.pop();
+        continue;
+      }
+
+      if (curStatus.child == Child.leftChild) {
+        curStatus.child = Child.rightChild;
+        stack.push(new Status(Child.leftChild, curStatus.node.leftChild));
+      } else if (curStatus.child == Child.rightChild) {
+        curStatus.child = Child.self;
+        stack.push(new Status(Child.leftChild, curStatus.node.rightChild));
+      } else {
+        answer.add(curStatus.node.value);
+        stack.pop();
+      }
+    }
+
+    return answer;
   }
 }

@@ -1,6 +1,7 @@
 package experiment_2;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 class MyList<T> implements Collection<T> {
@@ -210,4 +211,15 @@ class MyList<T> implements Collection<T> {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    ArrayList<T> list = new ArrayList<>();
+    for (MyNode node = head.next; node != head; node = node.next) {
+      list.add(node.value);
+    }
+    return list.toString();
+  }
+
 }

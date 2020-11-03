@@ -19,10 +19,16 @@ public class Experiment_2 {
     }
 
     tree = new BinaryLinkedTree<>(numberSequence, preorderSequence);
+    System.out.println("可视化输出树的结构");
     tree.printTree();
+    System.out.println("递归前中后序遍历");
     System.out.println(tree.recursionPreorderTraverse());
     System.out.println(tree.recursionInorderTraverse());
     System.out.println(tree.recursionPostorderTraverse());
+    System.out.println("非递归前中后序遍历");
+    System.out.println(tree.iterationPreorderTraverse());
+    System.out.println(tree.iterationInorderTraverse());
+    System.out.println(tree.iterationPostorderTraverse());
   }
 }
 
