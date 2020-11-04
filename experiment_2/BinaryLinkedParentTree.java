@@ -2,10 +2,9 @@ package experiment_2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
-public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> implements Serializable {
+public class BinaryLinkedParentTree<DataType extends Comparable<? super DataType>> implements Serializable {
 
   private static final long serialVersionUID = -2176296641657153564L;
 
@@ -15,13 +14,20 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
 
   private class BinaryLinkedNode<T extends Comparable<? super T>> {
     T value;
-    BinaryLinkedNode<T> leftChild, rightChild;
+    BinaryLinkedNode<T> leftChild, rightChild, parent;
+    int depth;
 
     BinaryLinkedNode() {
     }
 
     BinaryLinkedNode(T value) {
       this.value = value;
+    }
+
+    BinaryLinkedNode(T value, BinaryLinkedNode<T> parent, int depth) {
+      this.value = value;
+      this.parent = parent;
+      this.depth = depth;
     }
 
     BinaryLinkedNode(T value, BinaryLinkedNode<T> leftSon, BinaryLinkedNode<T> rightSon) {
@@ -57,10 +63,10 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
 
   private ArrayList<BinaryLinkedNode<DataType>> idToNode;
 
-  public BinaryLinkedTree(ArrayList<DataType> datas, ArrayList<Integer> preorderSequence) {
+  public BinaryLinkedParentTree(ArrayList<DataType> datas, ArrayList<Integer> preorderSequence) {
 
     MyStack<Status<DataType>> stack = new MyStack<>();
-    BinaryLinkedNode<DataType> head = new BinaryLinkedNode<>();
+    BinaryLinkedNode<DataType> head = new BinaryLinkedNode<>(null, null, 0);
     idToNode = new ArrayList<>(Collections.nCopies(datas.size(), null));
     stack.push(new Status<>(Child.rightChild, head));
 
@@ -71,7 +77,7 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
       if (curID == 0) {
         nextNode = null;
       } else {
-        nextNode = new BinaryLinkedNode<>(datas.get(curID - 1));
+        nextNode = new BinaryLinkedNode<>(datas.get(curID - 1), curStatus.node, curStatus.node.depth + 1);
         idToNode.set(curID - 1, nextNode);
       }
 
@@ -90,6 +96,7 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
     }
 
     root = head.rightChild;
+    root.parent = null;
   }
 
   private void printTree(BinaryLinkedNode<DataType> curNode, int depth) {
@@ -286,6 +293,31 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
   }
 
   public boolean checkComplete() {
-    return checkComplete(root, 1).legal();
+    return checkComplete(root, 0).legal();
+  }
+
+  public MyList<DataType> findCommonAncestor(int id1, int id2) {
+    MyList<DataType> result = new MyList<>();
+
+    BinaryLinkedNode<DataType> node1 = idToNode.get(id1 - 1), node2 = idToNode.get(id2 - 1);
+    // System.out.println(node1.toString() + node2.toString());
+    while (node1.depth > node2.depth) {
+      node1 = node1.parent;
+    }
+    while (node2.depth > node1.depth) {
+      node2 = node2.parent;
+    }
+    while (node1 != node2) {
+      node1 = node1.parent;
+      node2 = node2.parent;
+    }
+    while (node1 != null) {
+      // System.out.println("a");
+      result.pushFront(node1.value);
+      node1 = node1.parent;
+      node2 = node2.parent;
+    }
+
+    return result;
   }
 }
