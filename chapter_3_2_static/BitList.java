@@ -41,6 +41,10 @@ public class BitList {
     updateCapacity(index + 1);
     if (get(index) != value) {
       flip(index);
+    } else {
+      if (length < index + 1) {
+        length = index + 1;
+      }
     }
   }
 
@@ -75,6 +79,14 @@ public class BitList {
     this.size = bytes.length;
     this.capacity = this.size * 8;
     this.length = this.capacity;
+  }
+
+  public void reverse() {
+    for (int i = 0; i < length / 2; ++i) {
+      boolean l = get(i), r = get(length - 1 - i);
+      set(i, r);
+      set(length - i - 1, l);
+    }
   }
 
   @Override

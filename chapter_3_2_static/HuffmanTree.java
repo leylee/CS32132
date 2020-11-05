@@ -32,7 +32,6 @@ public class HuffmanTree {
 
     @Override
     public int compareTo(Node o) {
-      // TODO Auto-generated method stub
       return weight < o.weight ? -1 : weight == o.weight ? 0 : 1;
     }
   }
@@ -88,7 +87,9 @@ public class HuffmanTree {
     root = heap.poll();
 
     for (Node node : leaves) {
-      code.add(getCode(node));
+      BitList bits = getCode(node);
+      bits.reverse();
+      code.add(bits);
     }
 
     // System.out.println(this);
