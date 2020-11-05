@@ -157,4 +157,22 @@ public class HuffmanTree {
     return "HuffmanTree [code=" + code + "]";
   }
 
+  public byte[] decode(int length, byte[] bytes) {
+    byte[] result = new byte[length];
+    int index = 0;
+    Node p = root;
+    BitList bits = new BitList(bytes);
+    for (int i = 0; i < bits.getLength(); ++i) {
+      int childId = bits.get(i) ? 1 : 0;
+      p = p.childs[childId];
+      if (p.childs == null) {
+        result[index++] = p.data;
+        p = root;
+        if (index == length) {
+          break;
+        }
+      }
+    }
+    return result;
+  }
 }
