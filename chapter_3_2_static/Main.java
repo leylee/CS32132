@@ -10,13 +10,20 @@ import java.nio.ByteBuffer;
 
 public class Main {
   public static void main(String[] args) throws IOException {
-    String s = "aabc";
-    byte[] bytes = s.getBytes();
+    // String s = "aabc";
+    // byte[] bytes = s.getBytes();
+    byte[] bytes;
+    FileInputStream oriStream = new FileInputStream(new File("content.txt"));
+    bytes = oriStream.readAllBytes();
+
     HuffmanTree tree = new HuffmanTree(bytes);
     byte[] encoded = tree.encode(bytes);
+
+    System.out.println("原始文本");
+    System.out.println(new String(bytes));
     System.out.println("压缩后的 bits");
     System.out.println(new BitList(encoded));
-    System.out.println("压缩率: " + ((double) encoded.length / bytes.length * 100) + "%");
+    System.out.println("压缩率: " + ((double) (encoded.length + Integer.BYTES) / bytes.length * 100) + "%");
 
     File file = new File("encoded.dat");
     FileOutputStream outputStream = new FileOutputStream(file);
