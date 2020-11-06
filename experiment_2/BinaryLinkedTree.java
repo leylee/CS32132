@@ -243,6 +243,26 @@ public class BinaryLinkedTree<DataType extends Comparable<? super DataType>> imp
     return answer;
   }
 
+  public ArrayList<DataType> levelOrderTraverse() {
+    ArrayList<DataType> answer = new ArrayList<>();
+    MyQueue<BinaryLinkedNode<DataType>> queue = new MyQueue<>();
+    if (root == null) {
+      return answer;
+    }
+    queue.push(root);
+    while (!queue.empty()) {
+      BinaryLinkedNode<DataType> curNode = queue.pop();
+      answer.add(curNode.value);
+      if (curNode.leftChild != null) {
+        queue.push(curNode.leftChild);
+      }
+      if (curNode.rightChild != null) {
+        queue.push(curNode.rightChild);
+      }
+    }
+    return answer;
+  }
+
   private static class heightResult {
     int min, max;
     boolean legal;

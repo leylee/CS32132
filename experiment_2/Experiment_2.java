@@ -29,6 +29,8 @@ public class Experiment_2 {
     System.out.println(tree.iterationPreorderTraverse());
     System.out.println(tree.iterationInorderTraverse());
     System.out.println(tree.iterationPostorderTraverse());
+    System.out.println("层序遍历");
+    System.out.println(tree.levelOrderTraverse());
     System.out.println("是否是满二叉树: " + tree.checkComplete());
 
     BinaryLinkedParentTree<Integer> parentTree = new BinaryLinkedParentTree<>(numberSequence, preorderSequence);
@@ -46,4 +48,4 @@ public class Experiment_2 {
 
 // test string:
 // 10
-// 1 2 4 8 0 0 9 0 0 5 0 0 3 6 0 10 0 0 7 0 0
+// 10 1 2 4 8 0 0 9 0 0 5 0 0 3 6 0 10 0 0 7 0 0
