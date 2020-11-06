@@ -214,7 +214,6 @@ class MyList<T> implements Collection<T> {
 
   @Override
   public String toString() {
-    // TODO Auto-generated method stub
     ArrayList<T> list = new ArrayList<>();
     for (MyNode node = head.next; node != head; node = node.next) {
       list.add(node.value);
