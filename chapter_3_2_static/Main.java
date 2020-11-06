@@ -40,5 +40,9 @@ public class Main {
     System.out.println("解压后的数据");
     byte[] decoded = tree.decode(textLength, otherBytes);
     System.out.println(new String(decoded));
+
+    // for (int i = 0; i < 26; ++i) {
+    // System.out.println("" + i + " " + tree.code.get(i + 97));
+    // }
   }
 }
