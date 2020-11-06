@@ -75,7 +75,7 @@ public class HuffmanTree {
       ++getNode(b).weight;
     }
 
-    MyPriorityQueue<Node> heap = new MyPriorityQueue<>(leaves);
+    PriorityQueue<Node> heap = new PriorityQueue<>(leaves);
     while (heap.size() > 1) {
       Node leftchild = heap.poll();
       Node rightChild = heap.poll();
