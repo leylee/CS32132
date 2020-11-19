@@ -27,7 +27,7 @@ class ListGraph:
         """ 添加边, 复杂度 O(1) """
         self.nodes[edge.s].append(edge)
 
-    def dfs(self, begin: int = 1, visited: List[bool] = None, sequence: List[Edge] = None) -> Union[List[Edge], None]:
+    def recursive_dfs(self, begin: int = 1, visited: List[bool] = None, sequence: List[Edge] = None) -> Union[List[Edge], None]:
         """ 深度优先搜索 """
         if (visited is None and sequence is not None) or (visited is not None and sequence is None):
             return None
@@ -40,11 +40,11 @@ class ListGraph:
             if not visited[edge.e]:
                 visited[edge.e] = True
                 sequence.append(edge)
-                self.dfs(edge.e, visited, sequence)
+                self.recursive_dfs(edge.e, visited, sequence)
 
         return sequence
 
-    def dfs_iteration(self, begin: int = 1) -> List[Edge]:
+    def iterative_dfs(self, begin: int = 1) -> List[Edge]:
         """ 非递归深度优先搜索 """
 
         class Status:

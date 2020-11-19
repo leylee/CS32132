@@ -1,3 +1,5 @@
+from typing import List
+
 from experiment_3.listgraph import ListGraph, Edge
 from experiment_3.matrixgraph import MatrixGraph
 
@@ -38,13 +40,28 @@ if __name__ == '__main__':
         s: int
         e: int
         dis: int
-        edgeParams: list = [int(i) for i in edgeString.split()]
+        edgeParams: List[int] = [int(i) for i in edgeString.split()]
         listGraph.add(Edge(*edgeParams))
         matrixGraph.set(*edgeParams)
 
+    # 输出两个图
+    print("The adjacency list graph:")
     print(listGraph)
+    print("The adjacency list graph:")
     print(matrixGraph)
+    # 两种表示方法转换
+    print("The list graph from the matrix:")
     print(matrix_to_list(matrixGraph))
+    print("The matrix graph from the list:")
     print(list_to_matrix(listGraph))
-    list_dfs_sequence: list = listGraph.dfs(1)
-    print(list_dfs_sequence)
+    # 邻接表存储的搜索
+    list_recursive_dfs_sequence: List[Edge] = listGraph.recursive_dfs(1)
+    list_iterative_dfs_sequence: List[Edge] = listGraph.iterative_dfs(1)
+    list_bfs_sequence: List[Edge] = listGraph.bfs()
+    print("The recursive dfs sequence on the list graph:")
+    print(list_recursive_dfs_sequence)
+    print("The iterative dfs sequence on the list graph:")
+    print(list_iterative_dfs_sequence)
+    print("The bfs sequence on the list graph:")
+    print(list_bfs_sequence)
+
