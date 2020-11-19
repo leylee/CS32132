@@ -1,7 +1,6 @@
 from typing import List
 
-from experiment_3.listgraph import ListGraph, Edge
-from experiment_3.matrixgraph import MatrixGraph
+from experiment_3.mygraph import ListGraph, Edge, MatrixGraph
 
 
 def matrix_to_list(matrix_graph: MatrixGraph) -> ListGraph:
@@ -64,4 +63,13 @@ if __name__ == '__main__':
     print(list_iterative_dfs_sequence)
     print("The bfs sequence on the list graph:")
     print(list_bfs_sequence)
-
+    # 邻接矩阵存储的搜索\
+    matrix_recursive_dfs_sequence: List[Edge] = matrixGraph.recursive_dfs(1)
+    matrix_iterative_dfs_sequence: List[Edge] = matrixGraph.iterative_dfs(1)
+    matrix_bfs_sequence: List[Edge] = matrixGraph.bfs(1)
+    print("The recursive dfs sequence on the matrix graph:")
+    print(matrix_recursive_dfs_sequence)
+    print("The iterative dfs sequence on the matrix graph:")
+    print(matrix_iterative_dfs_sequence)
+    print("The bfs sequence on the matrix graph:")
+    print(matrix_bfs_sequence)
