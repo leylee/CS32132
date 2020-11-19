@@ -2,25 +2,25 @@ from experiment_3.listgraph import ListGraph, Edge
 from experiment_3.matrixgraph import MatrixGraph
 
 
-def matrix_to_list(oriGraph: MatrixGraph) -> ListGraph:
+def matrix_to_list(matrix_graph: MatrixGraph) -> ListGraph:
     """ 邻接矩阵转换为邻接表 """
-    n = oriGraph.n
-    matrix = oriGraph.matrix
-    new_graph: ListGraph = ListGraph(n)
+    n = matrix_graph.n
+    matrix = matrix_graph.matrix
+    list_graph: ListGraph = ListGraph(n)
     i: int
     j: int
     for i in range(1, n + 1):
         for j in range(1, n + 1):
-            if i != j and matrix[i][j] < oriGraph.INF:
-                new_graph.add(Edge(i, j, matrix[i][j]))
-    return new_graph
+            if i != j and matrix[i][j] < matrix_graph.INF:
+                list_graph.add(Edge(i, j, matrix[i][j]))
+    return list_graph
 
 
-def list_to_matrix(oriGraph: ListGraph) -> MatrixGraph:
+def list_to_matrix(list_graph: ListGraph) -> MatrixGraph:
     """ 邻接表转换为邻接矩阵 """
-    n = oriGraph.n
+    n = list_graph.n
     matrix_graph: MatrixGraph = MatrixGraph(n)
-    for node in oriGraph.nodes:
+    for node in list_graph.nodes:
         for edge in node:
             matrix_graph.set(edge.s, edge.e, edge.dis)
     return matrix_graph
@@ -46,4 +46,5 @@ if __name__ == '__main__':
     print(matrixGraph)
     print(matrix_to_list(matrixGraph))
     print(list_to_matrix(listGraph))
-    list_dfs_sequence: list = listGraph.dfs()
+    list_dfs_sequence: list = listGraph.dfs(1)
+    print(list_dfs_sequence)

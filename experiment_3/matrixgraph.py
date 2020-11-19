@@ -18,3 +18,6 @@ class MatrixGraph:
                 if i != j and self.matrix[i][j] < self.INF:
                     result += '[s: %i, e: %i, dis: %i]\n' % (i, j, self.matrix[i][j])
         return result
+
+    def __repr__(self):
+        return str(self)
