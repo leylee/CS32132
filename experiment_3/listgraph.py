@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from experiment_3.myqueue import MyQueue
+from experiment_3.datastructure import MyQueue, MyStack
 
 
 class Edge:
@@ -27,7 +27,7 @@ class ListGraph:
         """ 添加边, 复杂度 O(1) """
         self.nodes[edge.s].append(edge)
 
-    def dfs(self, begin: int, visited: List[bool] = None, sequence: List[Edge] = None) -> Union[List[Edge], None]:
+    def dfs(self, begin: int = 1, visited: List[bool] = None, sequence: List[Edge] = None) -> Union[List[Edge], None]:
         """ 深度优先搜索 """
         if (visited is None and sequence is not None) or (visited is not None and sequence is None):
             return None
@@ -44,6 +44,38 @@ class ListGraph:
 
         return sequence
 
+    def dfs_iteration(self, begin: int = 1) -> List[Edge]:
+        """ 非递归深度优先搜索 """
+
+        class Status:
+            def __init__(self, node: int, index: int):
+                self.node_id: int = node
+                self.index: int = index
+
+        sequence: List[Edge] = [Edge(0, begin, 0)]
+        visited: List[bool] = [False for i in range(self.n + 1)]
+        visited[begin] = True
+
+        stack: MyStack = MyStack()
+        stack.push(Status(begin, 0))
+        while stack:
+            status: Status = stack.top()
+            index = status.index
+            node_id = status.node_id
+            if index < len(self.nodes[node_id]):
+                edge: Edge = self.nodes[node_id][index]
+                if not visited[edge.e]:
+                    visited[edge.e] = True
+                    sequence.append(edge)
+                    stack.push(Status(edge.e, 0))
+                status.index += 1
+            else:
+                stack.pop()
+
+        return sequence
+
+
+
     def bfs(self, begin: int = 1) -> List[Edge]:
         """ 广度优先搜索 """
         visited: List[bool] = [False for i in range(self.n + 1)]
@@ -52,7 +84,7 @@ class ListGraph:
         queue.push(begin)
         sequence: List[Edge] = [Edge(0, begin, 0)]
 
-        while len(queue):
+        while queue:
             node_id: int = queue.pop()
             for edge in self.nodes[node_id]:
                 if not visited[edge.e]:

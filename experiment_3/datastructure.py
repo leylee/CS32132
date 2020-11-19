@@ -22,7 +22,7 @@ class MyQueue:
         self.head.prev = new_node
 
     def pop(self):
-        if len(self):
+        if self:
             self.size -= 1
             node = self.head.next
             self.head.next = node.next
@@ -32,7 +32,7 @@ class MyQueue:
             return None
 
     def front(self):
-        if len(self):
+        if self:
             return self.head.next.value
         else:
             return None
@@ -55,7 +55,7 @@ class MyStack:
         self.head.prev = new_node
 
     def pop(self):
-        if len(self):
+        if self:
             self.size -= 1
             node = self.head.prev
             node.prev.next = self.head
@@ -65,7 +65,7 @@ class MyStack:
             return None
 
     def top(self):
-        if len(self):
+        if self:
             return self.head.prev.value
         else:
             return None
