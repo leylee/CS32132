@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from experiment_3.datastructure import MyQueue, MyStack
+from python_modules.datastructure import MyQueue, MyStack
 
 
 class Edge:
