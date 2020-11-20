@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # 输出两个图
     print("The adjacency list graph:")
     print(listGraph)
-    print("The adjacency list graph:")
+    print("The adjacency matrix graph:")
     print(matrixGraph)
     # 两种表示方法转换
     print("The list graph from the matrix:")

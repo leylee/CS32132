@@ -157,8 +157,8 @@ class MatrixGraph:
             index = status.index
             node_id = status.node_id
             if index <= self.n:
-                edge: Edge = Edge(node_id, index, self.matrix[node_id][index])
-                if not visited[edge.e]:
+                if not visited[index] and self.matrix[node_id][index] < self.INF:
+                    edge: Edge = Edge(node_id, index, self.matrix[node_id][index])
                     visited[edge.e] = True
                     sequence.append(edge)
                     stack.push(Status(edge.e, 1))
