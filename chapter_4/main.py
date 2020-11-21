@@ -34,6 +34,19 @@ def check(bits: int) -> bool:
         return True
 
 
+def bits_to_list(bits: int) -> List[str]:
+    result: List[str] = []
+    if get_bit(Item.man) & bits:
+        result.append("man")
+    if get_bit(Item.goat) & bits:
+        result.append("goat")
+    if get_bit(Item.wolf) & bits:
+        result.append("wolf")
+    if get_bit(Item.vegetable) & bits:
+        result.append("vegetables")
+    return result
+
+
 if __name__ == '__main__':
     queue: MyQueue = MyQueue()
     status: Status = Status(0x0, 0xF)
@@ -43,7 +56,6 @@ if __name__ == '__main__':
     result_status: Union[Status, None] = None
 
     while queue:
-        print(1)
         curstatus: Status = queue.pop()
         if curstatus.right == 0x0:
             result_status = curstatus
@@ -73,4 +85,6 @@ if __name__ == '__main__':
         move_sequence.append(result_status)
         result_status = result_status.prev
     move_sequence.reverse()
-    print(move_sequence)
+    print("The items on the other side:")
+    for status in move_sequence:
+        print(bits_to_list(status.left))
