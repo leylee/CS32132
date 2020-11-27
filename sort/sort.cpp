@@ -2,6 +2,8 @@
 
 #include <queue>
 
+using std::queue;
+
 inline void swap(int *a, int *b) {
   int k = *a;
   *a = *b;
@@ -88,7 +90,6 @@ void radix_sort(int *begin, int *end) {
   int exp = 8;
   int radix = 1 << exp;
   int mask = radix - 1;
-  using std::queue;
 
   queue<int> *last_trip = new queue<int>[radix];
   queue<int> *next_trip = new queue<int>[radix];
@@ -120,6 +121,44 @@ void radix_sort(int *begin, int *end) {
       q.pop();
     }
   }
+
+  delete last_trip;
+  delete next_trip;
+}
+
+void msort(int *l, int *r, queue<int> &q) {
+  if (r == l + 1) {
+    q.push(*l);
+    return;
+  } else {
+    queue<int> x, y;
+    int *mid = l + ((r - l) >> 1);
+    msort(l, mid, x);
+    msort(mid, r, y);
+
+    while (x.size() || y.size()) {
+      if (y.empty()) {
+        q.push(x.front());
+        x.pop();
+      } else if (x.empty() || x.front() > y.front()) {
+        q.push(y.front());
+        y.pop();
+      } else {
+        q.push(x.front());
+        x.pop();
+      }
+    }
+  }
+}
+
+void merge_sort(int *begin, int *end) {
+  queue<int> *q = new queue<int>;
+  msort(begin, end, *q);
+  for (int *p = begin; p < end; ++p) {
+    *p = q->front();
+    q->pop();
+  }
+  delete q;
 }
 
 void bubble_sort(int *begin, int *end) {
@@ -137,7 +176,7 @@ void bubble_sort(int *begin, int *end) {
   }
 }
 
-void select_sort(int *begin, int *end) {
+void selection_sort(int *begin, int *end) {
   for (int *tail = end - 1; tail > begin; --tail) {
     int *maxp = tail;
     for (int *cursor = begin; cursor < tail; ++cursor) {
@@ -149,7 +188,7 @@ void select_sort(int *begin, int *end) {
   }
 }
 
-void insert_sort(int *begin, int *end) {
+void insertion_sort(int *begin, int *end) {
   for (int *tail = begin + 1; tail < end; ++tail) {
     int *cursor;
     for (cursor = begin; cursor < tail && *cursor <= *tail; ++cursor)
