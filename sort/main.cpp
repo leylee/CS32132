@@ -53,7 +53,7 @@ int main(void) {
     // test(n, array, sorted, radix_sort, "radix_sort");
     // test(n, array, sorted, heap_sort, "heap_sort");
     // test(n, array, sorted, quick_sort, "quick_sort");
-    // test(n, array, sorted, bubble_sort, "bubble_sort");
+    test(n, array, sorted, bubble_sort, "bubble_sort");
     test(n, array, sorted, select_sort, "select_sort");
     test(n, array, sorted, insert_sort, "insert_sort");
 
