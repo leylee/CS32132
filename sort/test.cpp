@@ -1,17 +1,13 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <iostream>
 
 #include "sort.hpp"
-
-#define print(x)               \
-  printf("%15s: %10.3fs\n", x, \
+#define print(x)                  \
+  printf("\n%-15s: %10.3fs\n", x, \
          (double)(end_clock - start_clock) / CLOCKS_PER_SEC)
 
-using std::cin;
 using std::clock;
-using std::cout;
 using std::memcpy;
 using std::printf;
 using std::scanf;
@@ -32,7 +28,8 @@ void test(int n, int *array, int *sorted, void (*sort)(int *begin, int *end),
   sort(sorted, sorted + n);
   end_clock = clock();
   print(name);
-  // print_array(sorted, sorted + n);
+  print_array(sorted, sorted + n);
+  putchar('\n');
 }
 
 int main(void) {
@@ -47,8 +44,9 @@ int main(void) {
       scanf("%i", array + i);
     }
     printf("n = %d\n", n);
-    // puts("Original array:");
-    // print_array(array, array + n);
+    puts("Original array:");
+    print_array(array, array + n);
+    putchar('\n');
 
     test(n, array, sorted, radix_sort, "radix_sort");
     test(n, array, sorted, heap_sort, "heap_sort");

@@ -1,4 +1,83 @@
-`random_data.txt`
+# 排序作业报告
+
+1190501001 李恩宇
+
+## 功能
+
+sort 函数原型: `void x_sort(int *begin, int *end)` , 实现了:
+
+- 二路归并排序 `merge_sort`
+- 基数排序 `radix_sort` (基数可变, 默认 $2^8$)
+- 堆排序 `heap_sort`
+- 快速排序 `quick_sort`
+- 冒泡排序 `bubble_sort`
+- 选择排序 `selection_sort`
+- 插入排序 `insertion_sort`
+
+## 生成测试数据并运行
+
+1. 生成测试数据 (Debian GNU/Linux 10 (buster) on Windows 10 x86_64):
+
+   - 编译测试数据生成器
+
+     ``` shell
+     cd /path/to/sort
+     gcc -Wall descending_gen.c -o descending_gen.out
+     gcc -Wall ascending_gen.c -o ascending_gen.out
+     gcc -Wall random_gen.c -o random_gen.out
+     ```
+
+   - 生成测试数据
+
+     ```shell
+     echo '10000 20000 50000 70000 100000 200000 500000 700000 1000000' | ./descending_gen.out > ./descending_data.txt
+     echo '10000 20000 50000 70000 100000 200000 500000 700000 1000000' | ./ascending_gen.out > ./ascending_data.txt
+     echo '10000 20000 50000 70000 100000 200000 500000 700000 1000000 2000000 5000000 7000000 10000000 20000000 50000000 70000000 100000000' | ./random_gen.out > ./random_data.txt
+     echo '10' | ./random_gen.out > ./test_data.txt
+     ```
+
+2. 验证排序算法正确性 (Debian GNU/Linux 10 (buster) on Windows 10 x86_64):
+
+   ```shell
+   cd /path/to/sort
+   g++ -Wall -O2 test.cpp sort.cpp -o test.out
+   ./test.out < test_data.txt
+   ```
+
+3. 测试环境: cmd.exe @ Windows 10 Professional 64-bit, Intel Core i7 8550U @ 1.80GHz
+
+   - 编译指令: 
+     ```bash
+     cd /path/to/sort
+     g++ -Wall -O2 main.cpp sort.cpp -o main.exe
+     ```
+   - 测试排序耗时:
+     ```bash
+     main.exe < random_data.txt & REM 随机数据
+     main.exe < ascending_data.txt & REM 顺序数据
+     main.exe < descending_data.txt & REM 逆序数据, 快速排序可能发生栈溢出, 需修改栈大小限制
+     ```
+
+4. 测试环境: bash.exe @ Ubuntu 18.04.3 LTS x86_64, Intel Xeon X5650 @ 2.67GHz
+
+   - 编译指令:
+
+     ```shell
+     cd /path/to/sort
+     g++ -Wall -O2 main.cpp sort.cpp -o main.out
+   ```
+     
+   - 测试排序耗时:
+
+     ```shell
+     ./main.out < random_data.txt # 随机数据
+     ./main.out < ascending_data.txt # 顺序数据
+     ./main.out < descending_data.txt # 逆序数据
+     ```
+
+## 各排序算法实测性能
+
+随机数据: `random_data.txt`
 
 | data size | merge sort | radix sort | heap sort | quick sort | bubble sort | selection sort | insertion sort |
 | --------: | ---------: | --------: | ---------: | ----------: | ----------: | ----------: | ----------: |
@@ -20,7 +99,7 @@
 | 70000000 | 32.678 | 2.063 | 25.535 | 7.571 |timeout|timeout|timeout|
 | 100000000 | 45.997 | 2.902 | 38.469 | 10.891 |timeout|timeout|timeout|
 
-`ascending.txt`
+顺序数据: `ascending.txt`
 
 | data size | merge sort | radix sort | heap sort | quick sort | bubble sort | selection sort | insertion sort |
 | --------: | ---------: | --------: | ---------: | ----------: | ----------: | --------: | --------: |
@@ -34,7 +113,7 @@
 | 700000 | 0.268 | 0.016 | 0.057 | 103.516 | 0.001 | 148.814 |76.178|
 | 1000000 | 0.365 | 0.021 | 0.071 | 200.987 | 0.001 | 279.007 |142.795|
 
-`descending.txt`
+逆序数据: `descending.txt`
 
 | data size | merge sort | radix sort | heap sort | quick sort* | bubble sort | selection sort | insertion sort |
 | --------: | ---------: | ---------: | --------: | ----------: | ----------: | -------------: | -------------: |

@@ -122,8 +122,8 @@ void radix_sort(int *begin, int *end) {
     }
   }
 
-  delete last_trip;
-  delete next_trip;
+  delete[] last_trip;
+  delete[] next_trip;
 }
 
 void msort(int *l, int *r, queue<int> &q) {
